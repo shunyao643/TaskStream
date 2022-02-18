@@ -6,6 +6,9 @@ import se.edu.inclass.task.Task;
 import se.edu.inclass.task.TaskNameComparator;
 
 import java.util.ArrayList;
+import java.util.Locale;
+
+import static java.util.stream.Collectors.toList;
 
 public class Main {
 
@@ -21,7 +24,13 @@ public class Main {
         System.out.println("Total number of deadlines: " + countDeadlines(tasksData));
 
         printDeadlinesWithStream(tasksData);
-        System.out.println("Total number of deadlines: " + countDeadlinesWithStream(tasksData));
+
+        ArrayList<Task> filteredList = filterTasksByString(tasksData, "11");
+        System.out.println("\nPrinting filtered list of data");
+        printData(filteredList);
+
+        System.out.println("Total number of deadlines (using stream): " + countDeadlinesWithStream(tasksData));
+
     }
 
     private static int countDeadlines(ArrayList<Task> tasksData) {
@@ -34,7 +43,7 @@ public class Main {
         return count;
     }
 
-    private static int countDeadlinesWithStream(ArrayList<Task> tasks){
+    private static int countDeadlinesWithStream(ArrayList<Task> tasks) {
         int count = 0;
         count = (int) tasks.stream()
                 .filter((t) -> t instanceof Deadline)
@@ -48,7 +57,7 @@ public class Main {
         }
     }
 
-    public static void printDataWithStreams(ArrayList<Task> tasks){
+    public static void printDataWithStreams(ArrayList<Task> tasks) {
         System.out.println("\nPrint tasks using streams");
 
         tasks.stream() // convert task data to stream
@@ -62,11 +71,20 @@ public class Main {
             }
         }
     }
-    public static void printDeadlinesWithStream(ArrayList<Task> tasks){
-        System.out.println("\nPrinting deadlines with streams");
+
+    public static void printDeadlinesWithStream(ArrayList<Task> tasks) {
+        System.out.println("\nPrint deadlines with stream, sorted in alphabetical");
         tasks.stream()
                 .filter((t) -> t instanceof Deadline)
+                .sorted((a, b) -> a.getDescription().toLowerCase().compareTo(b.getDescription().toLowerCase()))
                 .forEach(System.out::println);
+    }
+
+    private static ArrayList<Task> filterTasksByString(ArrayList<Task> tasksData, String s) {
+        ArrayList<Task> filteredList = (ArrayList<Task>) tasksData.stream()
+                .filter((t) -> t.getDescription().contains(s))
+                .collect(toList());
+        return filteredList;
     }
 
 }
